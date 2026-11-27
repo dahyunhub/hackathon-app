@@ -13,7 +13,11 @@
 운영진에게 발급받은 IAM 사용자로 콘솔에 로그인한 뒤 실행한다.
 비밀번호와 Access Key를 저장소에 적지 않는다.
 
+macOS에서는 설치한 최신 도구를 먼저 찾도록 PATH를 지정한다.
+기존 Docker Desktop의 `kubectl`보다 Homebrew 버전을 사용한다.
+
 ```sh
+export PATH="/opt/homebrew/bin:$PATH"
 aws login --profile hackathon
 export AWS_PROFILE=hackathon
 aws sts get-caller-identity
