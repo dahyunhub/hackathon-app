@@ -1,0 +1,24 @@
+name: Hello
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 인사하기
+        run: echo "hello from my laptop"
+      - name: 실행 환경 보기
+        env:
+          REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          echo "저장소: $REPOSITORY"
+          echo "이벤트: $EVENT_NAME"
+          echo "실행한 사람: $ACTOR"
+          uname -a
+          python3 --version
