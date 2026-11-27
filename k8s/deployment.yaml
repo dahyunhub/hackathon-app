@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hackathon-app
+  labels:
+    app: hackathon-app
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5          # 롤백용으로 이전 ReplicaSet 5개를 남긴다
+  selector:
+    matchLabels:
+      app: hackathon-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1                  # 업데이트 중 최대 1개까지 더 띄운다
+      maxUnavailable: 0            # 준비된 Pod 수가 2 아래로 내려가지 않게 한다
+  template:
+    metadata:
+      labels:
+        app: hackathon-app
+    spec:
+      containers:
+        - name: app
+          image: <ACCOUNT_ID>.dkr.ecr.ap-northeast-2.amazonaws.com/hackathon-app:<TAG>
+          ports:
+            - containerPort: 8000
+          readinessProbe:          # 통과해야 Service 가 트래픽을 보낸다
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:           # 연속 실패하면 kubelet 이 컨테이너를 다시 시작한다
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:              # scheduler 가 자리를 잡을 때 쓰는 값
+              cpu: 100m            # 0.1 vCPU
+              memory: 128Mi
+            limits:
+              memory: 256Mi        # 넘으면 OOMKilled 로 종료된다

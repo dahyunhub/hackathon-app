@@ -1,0 +1,24 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: hackathon-eks
+  region: ap-northeast-2
+  version: "1.37"              # 실습 날 aws eks describe-cluster-versions 로 최신 표준 지원 버전을 확인한다
+
+vpc:
+  nat:
+    gateway: Disable           # Node 를 public subnet 에 두므로 NAT Gateway 가 필요 없다
+
+accessConfig:
+  authenticationMode: API_AND_CONFIG_MAP   # Access Entry 를 쓰기 위한 설정. eksctl 기본값과 같다
+
+managedNodeGroups:
+  - name: ng-default
+    instanceType: t3.medium    # vCPU 2, 메모리 4GiB
+    desiredCapacity: 2
+    minSize: 1
+    maxSize: 3
+    volumeSize: 20             # 기본 80GB 대신 20GB
+    labels:
+      role: general
